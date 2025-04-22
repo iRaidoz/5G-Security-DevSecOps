@@ -1,0 +1,26 @@
+name: Build and Push Open5GS to ACR
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ACR_NAME: acr5gsecurity
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login to ACR
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.ACR_NAME }}.azurecr.io
+        username: ${{ secrets.AZURE_ACR_USERNAME }}
+        password: ${{ secrets.AZURE_ACR_PASSWORD }}
+
+    - name: Build & Push Open5GS
+      run: |
+        docker build -t $ACR_NAME.azurecr.io/open5gs-core:dev ./open5gs
+        docker push $ACR_NAME.azurecr.io/open5gs-core:dev

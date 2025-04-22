@@ -1,0 +1,13 @@
+# Docker
+*.log
+*.pid
+*.seed
+*.pid.lock
+*.env
+.docker
+docker-compose.override.yml
+Dockerfile.*
+.env.*
+*.tar
+*.tar.gz
+__pycache__/
