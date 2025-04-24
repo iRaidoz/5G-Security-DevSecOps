@@ -1,0 +1,41 @@
+name: Build and Push Docker Images to ACR
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docker/**'
+      - '.github/workflows/**'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      ACR_NAME: acr5gsecurity
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Azure CLI - Login to ACR
+      run: az acr login --name $ACR_NAME
+
+    - name: Build and push open5gs-mme
+      run: |
+        docker build -t $ACR_NAME.azurecr.io/open5gs-mme:dev ./docker/open5gs/mme
+        docker push $ACR_NAME.azurecr.io/open5gs-mme:dev
+
+    - name: Build and push ueransim-gnb
+      run: |
+        docker build -t $ACR_NAME.azurecr.io/ueransim-gnb:dev ./docker/ueransim/gnb
+        docker push $ACR_NAME.azurecr.io/ueransim-gnb:dev
+
+    - name: Build and push ueransim-ue
+      run: |
+        docker build -t $ACR_NAME.azurecr.io/ueransim-ue:dev ./docker/ueransim/ue
+        docker push $ACR_NAME.azurecr.io/ueransim-ue:dev
